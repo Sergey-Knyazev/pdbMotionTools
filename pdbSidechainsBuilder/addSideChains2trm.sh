@@ -35,12 +35,14 @@ while true ; do
 done
 
 xbase=${IN_FILE##*/}
+log_file=$OUT_DIR/${xbase%.*}.Scwrl4.log
 
 $SCRIPT_DIR/$OXYGEN_ADDER_DIR/oxygen_adder -i $IN_FILE -o $OUT_DIR/$xbase
 $SCRIPT_DIR/$STATE_SPLITTER_DIR/pdbSplitStates.sh $OUT_DIR/$xbase $OUT_DIR/
 rm $OUT_DIR/$xbase
 for f in $OUT_DIR/*.pdb
 do
-#    Scwrl4 -i $f -o $f >> ${f%.*}.log
-    Scwrl4 -i $f -o $f
+    echo --------------------------------------- >> $log_file
+    echo $(basename "$f") processing >> $log_file
+    Scwrl4 -i $f -o $f >> $log_file
 done

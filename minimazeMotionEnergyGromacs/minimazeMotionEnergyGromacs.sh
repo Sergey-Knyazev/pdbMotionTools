@@ -35,10 +35,18 @@ for f in $IN_DIR/*.pdb
 do
 	filename=$(basename "$f")
 	filename="${filename%.*}"
-	pdb2gmx -f $f -p $OUT_DIR/${filename}.top -o $OUT_DIR/${filename}.gro -ff gromos53a6 -water none -ignh
-	grompp -f $SCRIPT_DIR/min.mdp -c $OUT_DIR/${filename}.gro -p $OUT_DIR/${filename}.top -o $OUT_DIR/${filename}_input_min.tpr
-	mdrun -s $OUT_DIR/${filename}_input_min.tpr -deffnm $OUT_DIR/${filename}_min -v
-	editconf -f $OUT_DIR/${filename}_min.gro -o $OUT_DIR/${filename}_min.pdb
+	log_file=$OUT_DIR/${filename::-4}.gromacs.log
+	energy_log=$OUT_DIR/${filename::-4}.energy_relax.log
+
+	echo --------------------------------------- >> $log_file
+	echo $(basename "$f") processing >> $log_file
+
+	pdb2gmx -f $f -p $OUT_DIR/${filename}.top -o $OUT_DIR/${filename}.gro -ff gromos53a6 -water none -ignh &>> $log_file
+	grompp -f $SCRIPT_DIR/min.mdp -c $OUT_DIR/${filename}.gro -p $OUT_DIR/${filename}.top \
+		 -o $OUT_DIR/${filename}_input_min.tpr &>> $log_file
+	mdrun -s $OUT_DIR/${filename}_input_min.tpr -deffnm $OUT_DIR/${filename}_min -v &>> $log_file
+	editconf -f $OUT_DIR/${filename}_min.gro -o $OUT_DIR/${filename}_min.pdb &>> $log_file
 done
 
+cat $log_file | grep -e Step -e "processing$" >> $energy_log
 

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# minimazes the energy of pdb structures by GROMACS
+
 TEMP=`getopt --long -o "i:o:h" "$@"`
 eval set -- "$TEMP"
 SCRIPT_BASE=`basename $0`
@@ -13,8 +15,8 @@ while true ; do
                 echo " "
                 echo "options:"
                 echo "-h        show brief help"
-                echo "-i        specify a directory with transformation"
-                echo "-o        specify a directory to store output in"
+                echo "-i        specify a directory wich contain pdb files for energy minimization"
+                echo "-o        specify an output directory"
                 exit 0
         ;;
         -i )
@@ -31,12 +33,19 @@ while true ; do
     esac
 done
 
+if [ "$(ls -A $OUT_DIR)" ]; then
+    echo Error: output folder is not empty!
+    exit 1
+fi
+
 for f in $IN_DIR/*.pdb
 do
 	filename=$(basename "$f")
 	filename="${filename%.*}"
 	log_file=$OUT_DIR/${filename::-4}.gromacs.log
 	energy_log=$OUT_DIR/${filename::-4}.energy_relax.log
+
+	echo $(basename "$f") processing........
 
 	echo --------------------------------------- >> $log_file
 	echo $(basename "$f") processing >> $log_file

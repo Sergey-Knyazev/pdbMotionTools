@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# scripts implements following procedures:
+# - separates multi-model pdb file to many single-model pdb;
+# - adds sidechains to protein backbone for every single-model pdb by using Sqwrl4 tool.
+
 OXYGEN_ADDER_DIR=oxygenAdder
 STATE_SPLITTER_DIR=''
 
@@ -16,8 +20,8 @@ while true ; do
                 echo " "
                 echo "options:"
                 echo "-h        show brief help"
-                echo "-i        specify a file with transformation"
-                echo "-o        specify a directory to store output in"
+                echo "-i        specify an input pdb file"
+                echo "-o        specify an output directory"
                 exit 0
         ;;
         -i )
@@ -34,6 +38,11 @@ while true ; do
     esac
 done
 
+if [ "$(ls -A $OUT_DIR)" ]; then
+    echo "Error: the output folder is not empty!"
+    exit 1
+fi
+
 xbase=${IN_FILE##*/}
 log_file=$OUT_DIR/${xbase%.*}.Scwrl4.log
 
@@ -42,6 +51,7 @@ $SCRIPT_DIR/$STATE_SPLITTER_DIR/pdbSplitStates.sh $OUT_DIR/$xbase $OUT_DIR/
 rm $OUT_DIR/$xbase
 for f in $OUT_DIR/*.pdb
 do
+    echo $(basename "$f") pricessing....
     echo --------------------------------------- >> $log_file
     echo $(basename "$f") processing >> $log_file
     Scwrl4 -i $f -o $f >> $log_file

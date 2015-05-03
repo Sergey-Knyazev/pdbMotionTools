@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Separates the multi-modal pdb file to many single-model pdb files.
+# usage: ./pdbSplit states input.pdb out/patn/
+
 filename=$(basename "$1")
 filename="${filename%.*}"
 command="%dp $1 > $2/${filename}_%03d.pdb\n"

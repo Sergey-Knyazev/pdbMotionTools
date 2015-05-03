@@ -182,6 +182,7 @@ int process_atoms(std::vector<atom> &atoms, std::ostream &output) {
         }
         output << "Average: " << sum / dist_all.size() << std::endl;
         output << "Oxygen count: " << dist_all.size() << std::endl;
+        return 1;
     } else {
         for (unsigned i = 0; i < atoms.size(); ++i) {
             std::string const &tp = atoms[i].type;
@@ -301,6 +302,7 @@ int process(std::istream &input, std::ostream &output) {
             return res;
         }
     }
+    return 0;
 }
 
 int main(int argc, char **argv) {

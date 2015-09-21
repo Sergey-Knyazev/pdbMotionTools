@@ -4,6 +4,13 @@
 USAGE="Usage: ./pdbSplitStates input.pdb out/patn/"
 
 if
+    [ -z "$1" ] || [ -z "$2" ]; then
+    echo "Wrong arguments!"
+    echo $USAGE
+    exit 1
+fi
+
+if
     [ ! -f $1 ]; then
     echo "Input pdb file is not found!"
     echo $USAGE
@@ -17,7 +24,7 @@ if
     exit 1
 fi
 
-if [ "$(ls -A $DIR)" ]; then
+if [ "$(ls -A $2)" ]; then
     echo "Output directory is not empty!"
     echo $USAGE
     exit 1
